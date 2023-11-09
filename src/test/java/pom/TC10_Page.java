@@ -26,7 +26,10 @@ public class TC10_Page {
     private final By Orders = By.linkText("Orders");
     private final By DBExport = By.id("sales_order_grid_export");
     private final By Export = By.cssSelector("button[title='Export']");
+    private final By OrderId = By.id("sales_order_grid_filter_real_order_id");
 
+    private final By FromDate = By.xpath("/html/body/div[1]/div[4]/div/div[3]/div/div[2]/div/table/thead/tr[2]/th[3]/div/div[1]/input");
+    private final By ToDate = By.xpath("/html/body/div[1]/div[4]/div/div[3]/div/div[2]/div/table/thead/tr[2]/th[3]/div/div[2]/input");
 
 
     public void login(String username, String password) {
