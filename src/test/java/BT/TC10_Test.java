@@ -1,53 +1,75 @@
 package BT;
 
+import pom.BackendLogin;
+import pom.OrderMenuPage;
+import driver.driverFactory;
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.*;
 import org.testng.annotations.Test;
-import driver.driverFactory;
-import pom.TC10_Page;
-import org.openqa.selenium.chrome.ChromeDriver;
 
 import java.io.File;
-import java.io.IOException;
 
+/*
 
+1. Go to http://live.techpanda.org/index.php/backendlogin
+2. Login the credentials provided
+3. Go to Sales-> Orders menu
+4. Input OrderId and FromDate -> ToDate
+5. Click Search button
+6. Screenshot capture.
+
+*/
 public class TC10_Test {
     @Test
-    public void captureScreenshotByCondition() throws IOException {
+    public static void testcase10() {
+
         WebDriver driver = driverFactory.getChromeDriver();
-        TC10_Page page = new TC10_Page(driver);
+        try {
+            // 1. Go to http://live.techpanda.org/index.php/backendlogin
+            driver.get("http://live.techpanda.org/index.php/backendlogin");
 
-        // Step 1: Go to backend login page
-        driver.get("http://live.techpanda.org/index.php/backendlogin");
+            // 2. Login the credentials provided
+            BackendLogin loginPage = new BackendLogin(driver);
+            loginPage.enterUsername("user01");
+            loginPage.enterPassword("guru99com");
+            loginPage.clickLoginButton();
 
-        // Step 2: Login with provided credentials
-        page.login("user01", "guru99com");
+            // 3. Go to Sales-> Orders menu
+            OrderMenuPage o = new OrderMenuPage(driver);
+            //o.selectOrdersLink("//*[@id=\"nav\"]/li[1]/ul/li[1]/a/span");
+            o.clickOrdersLinkLocator();
 
-        // Step 3: Navigate to Sales -> Orders menu
-        page.closeMsgBox();
-        page.goToOrders();
+            // 4. Input OrderId and FromDate -> ToDate
+            o.enterOrderId("100021247");
+            o.enterFromDateInputLocator("11/7/2023");
+            o.enterToDateInputLocator("11/10/2023");
 
-        // Step 4: Input OrderId and FromDate -> ToDate
-        // Assuming you have elements for OrderId, FromDate, ToDate, and Search button
-        // Modify the following lines with the actual elements
-        By OrderIdInput = By.id("sales_order_grid_filter_real_order_id");
-        By FromDateInput = By.xpath("/html/body/div[1]/div[4]/div/div[3]/div/div[2]/div/table/thead/tr[2]/th[3]/div/div[1]/input");
+            // 5. Click Search button
+            o.clickSearchButtonLocator();
+            Thread.sleep(2000);
 
-        By ToDateInput = By.xpath("/html/body/div[1]/div[4]/div/div[3]/div/div[2]/div/table/thead/tr[2]/th[3]/div/div[2]/input");
-        By SearchButton = By.xpath("/html/body/div[1]/div[4]/div/div[3]/div/table/tbody/tr/td[3]/button[2]");
+            // 6. Screenshot capture.
+            File screenshotFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+            FileUtils.copyFile(screenshotFile, new File("src/test/resources/image/testcase10.png"));
 
-        driver.findElement(OrderIdInput).sendKeys("60024");
-        driver.findElement(FromDateInput).sendKeys("2023-01-01"); // Replace with your FromDate
-        driver.findElement(ToDateInput).sendKeys("2023-12-31"); // Replace with your ToDate
-        driver.findElement(SearchButton).click();
 
-        // Step 5: Screenshot capture
-         TakesScreenshot screenshot = (TakesScreenshot) driver;
-         File srcFile = screenshot.getScreenshotAs(OutputType.FILE);
-         String screenshotPath = "./screenshot.png";
-         FileUtils.copyFile(srcFile, new File(screenshotPath));
+            Thread.sleep(2000);
 
-        // Step 6: Handle the captured screenshot as needed
-         driver.quit();
+        }  catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // 11. Quit browser session
+        driver.quit();
+    }
+
+
+
+    public static double parseCurrencyToDouble(String currencyString) {
+        // Remove currency symbols, commas, and other non-numeric characters
+        String cleanedString = currencyString.replaceAll("[^0-9.]", "");
+        // Parse the cleaned string as a double
+        return Double.parseDouble(cleanedString);
     }
 }
+
